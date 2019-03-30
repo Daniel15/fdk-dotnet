@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Basic": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "FN_FN_ID": "123",
+        "FN_NAME": "echo",
+        "FN_TMPSIZE": "9000",
+        "FN_FORMAT": "http-stream",
+        "FN_LISTENER": "/run/foo.sock",
+        "FN_APP_NAME": "helloapp",
+        "FN_APP_ID": "456",
+        "FN_MEMORY": "128"
+      }
+    }
+  }
+}
