@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace FnProject.Fdk
 {
@@ -31,6 +32,46 @@ namespace FnProject.Fdk
 		/// Gets the path of the UNIX socket to accept requests.
 		/// </summary>
 		public string Listener => Environment.GetEnvironmentVariable("FN_LISTENER");
+
+		/// <summary>
+		/// Gets the type of socket being listened on.
+		/// </summary>
+		public SocketType ListenerSocketType
+		{
+			get
+			{
+				if (Listener.StartsWith(Constants.UNIX_SOCKET_PREFIX))
+				{
+					return SocketType.Unix;
+				}
+				return Listener.StartsWith(Constants.TCP_PREFIX) ? SocketType.Tcp : SocketType.Unknown;
+			}
+		}
+
+		/// <summary>
+		/// Gets the path of the UNIX socket to accept request, or <c>null</c> if not using a socket.
+		/// </summary>
+		public string ListenerUnixSocketPath =>
+			ListenerSocketType == SocketType.Unix
+				? Listener.Substring(Constants.UNIX_SOCKET_PREFIX.Length)
+				: null;
+
+		/// <summary>
+		/// Gets the TCP endpoint being listened on, or <c>null</c> if not using TCP.
+		/// </summary>
+		public IPEndPoint ListenerTcpEndpoint
+		{
+			get
+			{
+				if (ListenerSocketType != SocketType.Tcp)
+				{
+					return null;
+				}
+				var tcpSocket = Listener.Substring(Constants.TCP_PREFIX.Length);
+				var parts = tcpSocket.Split(':');
+				return new IPEndPoint(IPAddress.Parse(parts[0]), int.Parse(parts[1]));
+			}
+		}
 
 		/// <summary>
 		/// Gets the amount of RAM (in MB) allocated to this function

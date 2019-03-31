@@ -1,4 +1,6 @@
-﻿namespace FnProject.Fdk
+﻿using System.Net;
+
+namespace FnProject.Fdk
 {
 	/// <summary>
 	/// Represents the system-wide configuration.
@@ -29,6 +31,21 @@
 		/// Gets the path of the UNIX socket to accept requests.
 		/// </summary>
 		string Listener { get; }
+
+		/// <summary>
+		/// Gets the type of socket being listened on.
+		/// </summary>
+		SocketType ListenerSocketType { get; }
+
+		/// <summary>
+		/// Gets the path of the UNIX socket to accept request, or <c>null</c> if not using a socket.
+		/// </summary>
+		string ListenerUnixSocketPath { get; }
+
+		/// <summary>
+		/// Gets the TCP endpoint being listened on, or <c>null</c> if not using TCP.
+		/// </summary>
+		IPEndPoint ListenerTcpEndpoint { get; }
 
 		/// <summary>
 		/// Gets the amount of RAM (in MB) allocated to this function

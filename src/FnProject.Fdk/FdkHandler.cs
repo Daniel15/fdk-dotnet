@@ -20,7 +20,7 @@
 		/// <param name="function">Function to handle requests</param>
 		public static void Handle(IFunction function)
 		{
-			HttpServer.Start(function);
+			HttpServer.Start(function, new Config());
 		}
 	}
 }

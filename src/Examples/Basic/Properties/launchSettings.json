@@ -7,7 +7,7 @@
         "FN_NAME": "echo",
         "FN_TMPSIZE": "9000",
         "FN_FORMAT": "http-stream",
-        "FN_LISTENER": "/run/foo.sock",
+        "FN_LISTENER": "http://127.0.0.1:30241",
         "FN_APP_NAME": "helloapp",
         "FN_APP_ID": "456",
         "FN_MEMORY": "128"
