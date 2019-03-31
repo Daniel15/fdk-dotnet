@@ -1,0 +1,1 @@
+FnProject FDK for C# / .NET Core. WIP. Release and docs coming soon.
