@@ -1,5 +1,4 @@
 ﻿using FnProject.Fdk;
-using System.Threading.Tasks;
 
 namespace FnProject.Examples.Basic
 {
@@ -9,7 +8,17 @@ namespace FnProject.Examples.Basic
 		{
 			FdkHandler.Handle(async (ctx, input) =>
 			{
-				return "Hello world!";
+				// Plain text
+				// return "Hello world!";
+
+				// Objects are automatically serialized as JSON
+				return new { message = "Hello world!" };
+
+				// Streams can be returned. They will be automatically closed when the
+				// request completes
+				// return File.Open("c:\\temp\\test.txt", FileMode.Open, FileAccess.Read);
+
+				// For more complex scenarios, you can create result instances directly
 			});
 		}
 	}

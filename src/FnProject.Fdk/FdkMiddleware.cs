@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using FnProject.Fdk.Result;
 using Microsoft.AspNetCore.Http;
 
 namespace FnProject.Fdk
@@ -17,11 +18,12 @@ namespace FnProject.Fdk
 
 		public async Task InvokeAsync(HttpContext httpContext, IContext fnContext)
 		{
+			// TODO: Handle input
 			var input = new Input();
-			// TODO: Format this properly
 			// TODO: Handle errors (maybe in separate middleware to handle errors elsewhere?)
-			var result = await _function.InvokeAsync(fnContext, input);
-			await httpContext.Response.WriteAsync((string)result);
+			var rawResult = await _function.InvokeAsync(fnContext, input);
+			var result = ResultFactory.Create(rawResult);
+			await result.WriteResult(httpContext.Response);
 		}
 	}
 }
