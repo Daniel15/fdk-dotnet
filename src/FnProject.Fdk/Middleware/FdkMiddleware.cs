@@ -16,10 +16,8 @@ namespace FnProject.Fdk.Middleware
 			_function = function;
 		}
 
-		public async Task InvokeAsync(HttpContext httpContext, IContext fnContext)
+		public async Task InvokeAsync(HttpContext httpContext, IContext fnContext, IInput input)
 		{
-			// TODO: Handle input
-			var input = new Input();
 			var rawResult = await _function.InvokeAsync(fnContext, input);
 			var result = ResultFactory.Create(rawResult);
 			await result.WriteResult(httpContext.Response);

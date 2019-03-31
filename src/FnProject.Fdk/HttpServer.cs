@@ -21,6 +21,7 @@ namespace FnProject.Fdk
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			services.AddScoped<IContext, Context>();
+			services.AddScoped<IInput, Input>();
 		}
 
 		/// <summary>

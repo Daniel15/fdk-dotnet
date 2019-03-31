@@ -8,11 +8,18 @@ namespace FnProject.Examples.Basic
 		{
 			FdkHandler.Handle(async (ctx, input) =>
 			{
+
+				var inputStr = input.AsString();
+				if (string.IsNullOrWhiteSpace(inputStr))
+				{
+					inputStr = "world";
+				}
+
 				// Plain text
 				// return "Hello world!";
 
 				// Objects are automatically serialized as JSON
-				return new { message = "Hello world!" };
+				return new { message = "Hello " + inputStr + "!" };
 
 				// Streams can be returned. They will be automatically closed when the
 				// request completes

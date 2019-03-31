@@ -20,7 +20,7 @@ namespace FnProject.Fdk
 		/// <param name="ctx">Execution context for the function</param>
 		/// <param name="input">Input to the function</param>
 		/// <returns>Data to return from the request</returns>
-		public Task<object> InvokeAsync(IContext ctx, Input input)
+		public Task<object> InvokeAsync(IContext ctx, IInput input)
 		{
 			return _function(ctx, input);
 		}
@@ -31,6 +31,6 @@ namespace FnProject.Fdk
 		/// <param name="ctx">Execution context for the function</param>
 		/// <param name="input">Input to the function</param>
 		/// <returns>Data to return from the request</returns>
-		public delegate Task<object> FdkFunction(IContext ctx, Input input);
+		public delegate Task<object> FdkFunction(IContext ctx, IInput input);
 	}
 }

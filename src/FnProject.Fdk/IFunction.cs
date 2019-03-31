@@ -13,6 +13,6 @@ namespace FnProject.Fdk
 		/// <param name="ctx">Execution context for the function</param>
 		/// <param name="input">Input to the function</param>
 		/// <returns>Data to return from the request</returns>
-		Task<object> InvokeAsync(IContext ctx, Input input);
+		Task<object> InvokeAsync(IContext ctx, IInput input);
 	}
 }
