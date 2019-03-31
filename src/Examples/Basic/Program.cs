@@ -1,4 +1,6 @@
 ﻿using FnProject.Fdk;
+using FnProject.Fdk.Result;
+using Microsoft.AspNetCore.Http;
 
 namespace FnProject.Examples.Basic
 {
@@ -16,16 +18,26 @@ namespace FnProject.Examples.Basic
 				}
 
 				// Plain text
-				// return "Hello world!";
+				// return "Hello " + inputStr + "!";
 
 				// Objects are automatically serialized as JSON
-				return new { message = "Hello " + inputStr + "!" };
+				// return new { message = "Hello " + inputStr + "!" };
 
 				// Streams can be returned. They will be automatically closed when the
 				// request completes
 				// return File.Open("c:\\temp\\test.txt", FileMode.Open, FileAccess.Read);
 
 				// For more complex scenarios, you can create result instances directly
+				/*return new RawResult("Hello " + inputStr + "!")
+				{
+					// Example of custom status code
+					HttpStatus = StatusCodes.Status202Accepted,
+					// Example of custom headers
+					Headers =
+					{
+						["X-Some-Header"] = "foo"
+					}
+				};*/
 			});
 		}
 	}
