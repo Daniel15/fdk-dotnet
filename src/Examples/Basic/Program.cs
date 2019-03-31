@@ -18,7 +18,7 @@ namespace FnProject.Examples.Basic
 				}
 
 				// Plain text
-				// return "Hello " + inputStr + "!";
+				return "Hello " + inputStr + "!";
 
 				// Objects are automatically serialized as JSON
 				// return new { message = "Hello " + inputStr + "!" };
