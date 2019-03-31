@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace FnProject.Fdk
 {
@@ -7,11 +8,16 @@ namespace FnProject.Fdk
 	/// </summary>
 	public class FunctionWrapper : IFunction
 	{
-		private readonly FdkFunction _function;
+		private readonly Func<IContext, IInput, Task<object>> _function;
 
-		public FunctionWrapper(FdkFunction function)
+		public FunctionWrapper(Func<IContext, IInput, Task<object>> function)
 		{
 			_function = function;
+		}
+
+		public FunctionWrapper(Func<IContext, IInput, object> function)
+		{
+			_function = (ctx, input) => Task.FromResult(function(ctx, input));
 		}
 
 		/// <summary>
@@ -24,13 +30,5 @@ namespace FnProject.Fdk
 		{
 			return _function(ctx, input);
 		}
-
-		/// <summary>
-		/// Handles for Fn functions
-		/// </summary>
-		/// <param name="ctx">Execution context for the function</param>
-		/// <param name="input">Input to the function</param>
-		/// <returns>Data to return from the request</returns>
-		public delegate Task<object> FdkFunction(IContext ctx, IInput input);
 	}
 }

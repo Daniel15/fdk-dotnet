@@ -8,7 +8,7 @@ namespace FnProject.Examples.Basic
 	{
 		static void Main(string[] args)
 		{
-			FdkHandler.Handle(async (ctx, input) =>
+			FdkHandler.Handle((ctx, input) =>
 			{
 
 				var inputStr = input.AsString();

@@ -1,4 +1,7 @@
-﻿namespace FnProject.Fdk
+﻿using System;
+using System.Threading.Tasks;
+
+namespace FnProject.Fdk
 {
 	/// <summary>
 	/// Handler for FDK requests
@@ -9,7 +12,16 @@
 		/// Configure the request handler. This starts the web server and waits for requests.
 		/// </summary>
 		/// <param name="function">Function to handle requests</param>
-		public static void Handle(FunctionWrapper.FdkFunction function)
+		public static void Handle(Func<IContext, IInput, object> function)
+		{
+			Handle(new FunctionWrapper(function));
+		}
+
+		/// <summary>
+		/// Configure the request handler. This starts the web server and waits for requests.
+		/// </summary>
+		/// <param name="function">Function to handle requests</param>
+		public static void Handle(Func<IContext, IInput, Task<object>> function)
 		{
 			Handle(new FunctionWrapper(function));
 		}
