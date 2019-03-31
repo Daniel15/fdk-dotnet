@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using FnProject.Fdk.Middleware;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,7 @@ namespace FnProject.Fdk
 		/// </summary>
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
+			app.UseJsonExceptionHandler(isDev: env.IsDevelopment());
 			app.UseMiddleware<FdkMiddleware>();
 		}
 

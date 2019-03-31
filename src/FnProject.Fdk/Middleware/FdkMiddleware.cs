@@ -2,7 +2,7 @@
 using FnProject.Fdk.Result;
 using Microsoft.AspNetCore.Http;
 
-namespace FnProject.Fdk
+namespace FnProject.Fdk.Middleware
 {
 	/// <summary>
 	/// ASP.NET Core middleware to handle function requests
@@ -20,7 +20,6 @@ namespace FnProject.Fdk
 		{
 			// TODO: Handle input
 			var input = new Input();
-			// TODO: Handle errors (maybe in separate middleware to handle errors elsewhere?)
 			var rawResult = await _function.InvokeAsync(fnContext, input);
 			var result = ResultFactory.Create(rawResult);
 			await result.WriteResult(httpContext.Response);
