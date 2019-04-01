@@ -6,6 +6,8 @@ This Function Developer Kit makes it easy to deploy .NET Core functions to Fn.
 
 Before starting, ensure you have installed Fn, and that it's working as expected by completing one of the official tutorials (for example, the [Node.js tutorial](https://fnproject.io/tutorials/node/intro/)).
 
+The below steps will eventually be automated, but for now, you need to do them manually:
+
 Create a new .NET Core console app and add the `FnProject.Fdk` NuGet package. You can use your favourite IDE (eg. Visual Studio, VS Code), or the `dotnet` command line:
 ```sh
 mkdir MyFunction
