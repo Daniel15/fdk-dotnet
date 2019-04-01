@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using FnProject.Fdk.Middleware;
 using Microsoft.AspNetCore;
@@ -95,7 +96,10 @@ namespace FnProject.Fdk
 				FilePermissions.S_IRGRP | FilePermissions.S_IWGRP |
 				FilePermissions.S_IROTH | FilePermissions.S_IWOTH
 			);
-			Syscall.symlink(tempUnixSocket, unixSocket);
+
+			var tempUnixSocketName = Path.GetFileName(tempUnixSocket);
+			Syscall.symlink(tempUnixSocketName, unixSocket);
+
 			Console.WriteLine("UNIX socket: {0}", unixSocket);
 		}
 	}
