@@ -1,0 +1,8 @@
+schema_version: 20180708
+name: hello-dotnet
+version: 0.0.1
+runtime: docker
+triggers:
+- name: hello-dotnet-trigger
+  type: http
+  source: /hello-dotnet
