@@ -1,0 +1,16 @@
+using FnProject.Fdk;
+using System;
+
+namespace {FUNCTION_NAME}
+{
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			FdkHandler.Handle(async (ctx, input) =>
+			{
+				return "Hello " + input.AsString();
+			});
+		}
+	}
+}

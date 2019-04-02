@@ -4,81 +4,21 @@ This Function Developer Kit makes it easy to deploy .NET Core functions to Fn.
 
 # Quick Start
 
-Before starting, ensure you have installed Fn, and that it's working as expected by completing one of the official tutorials (for example, the [Node.js tutorial](https://fnproject.io/tutorials/node/intro/)).
+Before starting, ensure you have installed Fn, and started a local Fn server by running `fn start`.
 
-The below steps will eventually be automated, but for now, you need to do them manually:
-
-Create a new .NET Core console app and add the `FnProject.Fdk` NuGet package. You can use your favourite IDE (eg. Visual Studio, VS Code), or the `dotnet` command line:
 ```sh
+# Create new function
 mkdir MyFunction
 cd MyFunction
-dotnet new console
-dotnet add package FnProject.Fdk
+fn init --init-image daniel15/fn-dotnet-init
+
+# Deploy it to local Fn server (make sure you've ran "fn start" first)
+fn deploy --app Test --create-app --local
+
+# Test it out!
+echo "Daniel" | fn invoke Test MyFunction
+# Should output "Hello Daniel"
 ```
-
-Update `Program.cs`:
-```csharp
-using FnProject.Fdk;
-using System;
-
-namespace MyFunction
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            FdkHandler.Handle((ctx, input) =>
-            {
-                return "Hello " + input.AsString();
-            });
-        }
-    }
-}
-```
-
-Create `Dockerfile`:
-```dockerfile
-FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
-WORKDIR /app
-
-FROM microsoft/dotnet:2.2-sdk AS build
-WORKDIR /src
-COPY ["MyFunction.csproj", "."]
-RUN dotnet restore "MyFunction.csproj"
-COPY . .
-RUN dotnet build "MyFunction.csproj" -c Release -o /app
-
-FROM build AS publish
-RUN dotnet publish "MyFunction.csproj" -c Release -o /app
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "MyFunction.dll"]
-```
-
-Create `func.yaml`:
-```yaml
-schema_version: 20180708
-name: myfunction
-version: 0.0.1
-runtime: docker
-triggers:
-- name: myfunction-trigger
-  type: http
-  source: /myfunction
-```
-
-Deploy the function:
-```sh
-fn --verbose deploy --app Test --create-app --local
-```
-
-Invoke it and ensure it works:
-```sh
-echo "Daniel" | fn invoke Test myfunction
-```
-This should return "Hello Daniel"
 
 # API
 
