@@ -22,7 +22,7 @@ echo "Daniel" | fn invoke Test MyFunction
 
 # API
 
-To configure your function, call `FdkHandler.Handle` with a lambda function. The function takes two arguments: A context containing information about the request (for example, HTTP headers, app name, function name, etc), and the input to the function.
+To configure your function, call `FdkHandler.Handle` with a [lambda expression](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions). The function takes two arguments: A context containing information about the request (for example, HTTP headers, app name, function name, etc), and the input to the function. The function can be either a regular function, or an asynchronous function using the `async` keyword.
 
 ## Input
 The following methods are available to obtain input for your function:
@@ -86,4 +86,25 @@ Example of invoking this function:
 ```sh
 $ fn invoke Test myfunction
 {"Message":"Hello World!"}
+```
+
+## Using HTTP headers and setting HTTP status codes
+
+To set custom status codes or headers, you need to return a subclass of `FnResult` (`RawResult`, `JsonResult` or `StreamResult`, depending on the type you're returning, as documented above). This contains `HttpStatus` and `Headers` properties:
+
+```csharp
+FdkHandler.Handle((ctx, input) =>
+{
+	var inputStr = input.AsString();
+	return new RawResult("Hello " + inputStr + "!")
+	{
+		// Example of custom status code
+		HttpStatus = StatusCodes.Status202Accepted,
+		// Example of custom headers
+		Headers =
+		{
+			["X-Some-Header"] = "foo"
+		}
+	};
+});
 ```
