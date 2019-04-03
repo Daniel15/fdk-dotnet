@@ -7,9 +7,14 @@ namespace {FUNCTION_NAME}
 	{
 		static void Main(string[] args)
 		{
-			FdkHandler.Handle(async (ctx, input) =>
+			FdkHandler.Handle((ctx, input) =>
 			{
-				return "Hello " + input.AsString();
+				var inputStr = input.AsString();
+				if (string.IsNullOrWhiteSpace(inputStr))
+				{
+					inputStr = "world";
+				}
+				return "Hello " + inputStr;
 			});
 		}
 	}
