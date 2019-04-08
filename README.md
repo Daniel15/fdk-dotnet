@@ -108,3 +108,13 @@ FdkHandler.Handle((ctx, input) =>
 	};
 });
 ```
+## Timeouts
+
+To properly handle function timeouts, any functions that perform I/O (database operations, downloading/uploading, etc) should be `async` functions, and use the `CancellationToken` provided in `ctx.TimedOut` for all their async function calls. For example:
+
+```csharp
+var client = new HttpClient();
+var response = client.GetAsync("https://www.example.com/", ctx.TimedOut);
+```
+
+This will ensure that the operation is correctly cancelled if the function times out.

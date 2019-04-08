@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.AspNetCore.Http;
 
 namespace FnProject.Fdk
@@ -56,5 +57,10 @@ namespace FnProject.Fdk
 		/// Gets the HTTP request URL for this event
 		/// </summary>
 		public string RequestUrl => _request.Headers["Fn-Http-Request-Url"];
+
+		/// <summary>
+		/// Gets the cancellation token to handle aborting the request if it takes too long.
+		/// </summary>
+		public CancellationToken TimedOut { get; set; }
 	}
 }

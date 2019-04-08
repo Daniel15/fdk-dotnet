@@ -1,4 +1,5 @@
-﻿using FnProject.Fdk;
+﻿using System.Threading.Tasks;
+using FnProject.Fdk;
 using FnProject.Fdk.Result;
 using Microsoft.AspNetCore.Http;
 
@@ -38,6 +39,13 @@ namespace FnProject.Examples.Basic
 						["X-Some-Header"] = "foo"
 					}
 				};*/
+
+				// When performing async operations, use ctx.TimedOut as the cancellation token
+				// It will be triggered if the function times out.
+				/*while (true)
+				{
+					await Task.Delay(1000, ctx.TimedOut);
+				}*/
 			});
 		}
 	}
