@@ -114,7 +114,7 @@ To properly handle function timeouts, any functions that perform I/O (database o
 
 ```csharp
 var client = new HttpClient();
-var response = client.GetAsync("https://www.example.com/", ctx.TimedOut);
+var response = await client.GetAsync("https://www.example.com/", ctx.TimedOut);
 ```
 
 This will ensure that the operation is correctly cancelled if the function times out.
