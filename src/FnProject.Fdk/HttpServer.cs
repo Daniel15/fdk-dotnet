@@ -50,10 +50,10 @@ namespace FnProject.Fdk
 		/// <summary>
 		/// Starts the web server
 		/// </summary>
-		public static void Start(IFunction function, IConfig config)
+		public static IWebHostBuilder CreateWebHostBuilder(IConfig config, Action<IServiceCollection> configureServices)
 		{
 			ConfigValidator.Validate(config);
-			WebHost.CreateDefaultBuilder()
+			return WebHost.CreateDefaultBuilder()
 				.UseStartup<HttpServer>()
 				.UseLibuv()
 				.ConfigureKestrel(options =>
@@ -73,10 +73,8 @@ namespace FnProject.Fdk
 				.ConfigureServices(services =>
 				{
 					services.AddSingleton(config);
-					services.AddSingleton(function);
-				})
-				.Build()
-				.Run();
+					configureServices(services);
+				});
 		}
 
 		/// <summary>

@@ -1,13 +1,19 @@
-﻿using System.Threading.Tasks;
-using FnProject.Fdk;
-using FnProject.Fdk.Result;
-using Microsoft.AspNetCore.Http;
+﻿using FnProject.Fdk;
 
 namespace FnProject.Examples.Basic
 {
 	class Program
 	{
 		static void Main(string[] args)
+		{
+			// Example of an inline function
+			//BasicExample();
+
+			// Example of a function in a separate class
+			FdkHandler.Handle<HelloWorldFunction>();
+		}
+
+		static void BasicExample()
 		{
 			FdkHandler.Handle((ctx, input) =>
 			{

@@ -14,11 +14,18 @@ namespace FnProject.Fdk.Middleware
 	{
 		private readonly IFunction _function;
 		private readonly ILogger<FdkMiddleware> _logger;
+		private readonly IServiceProvider _services;
 
-		public FdkMiddleware(RequestDelegate next, IFunction function, ILogger<FdkMiddleware> logger)
+		public FdkMiddleware(
+			RequestDelegate next, 
+			IFunction function, 
+			ILogger<FdkMiddleware> logger, 
+			IServiceProvider services
+		)
 		{
 			_function = function;
 			_logger = logger;
+			_services = services;
 		}
 
 		/// <summary>
@@ -44,10 +51,10 @@ namespace FnProject.Fdk.Middleware
 			if (timeUntilTimeout == null)
 			{
 				// No timeout, just run the function directly
-				return await _function.InvokeAsync(fnContext, input);
+				return await _function.InvokeAsync(fnContext, input, _services);
 			}
 			
-			var functionTask = _function.InvokeAsync(fnContext, input);
+			var functionTask = _function.InvokeAsync(fnContext, input, _services);
 			var resultOrCancellation = await Task.WhenAny(
 				functionTask,
 				Task.Delay(timeUntilTimeout.Value, tokenSource.Token)

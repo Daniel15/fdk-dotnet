@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace FnProject.Fdk
 {
@@ -12,7 +13,8 @@ namespace FnProject.Fdk
 		/// </summary>
 		/// <param name="ctx">Execution context for the function</param>
 		/// <param name="input">Input to the function</param>
+		/// <param name="services">Service provider for dependency injection</param>
 		/// <returns>Data to return from the request</returns>
-		Task<object> InvokeAsync(IContext ctx, IInput input);
+		Task<object> InvokeAsync(IContext ctx, IInput input, IServiceProvider services);
 	}
 }

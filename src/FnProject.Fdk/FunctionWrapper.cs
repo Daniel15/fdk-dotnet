@@ -25,8 +25,9 @@ namespace FnProject.Fdk
 		/// </summary>
 		/// <param name="ctx">Execution context for the function</param>
 		/// <param name="input">Input to the function</param>
+		/// <param name="services">Service provider for dependency injection</param>
 		/// <returns>Data to return from the request</returns>
-		public Task<object> InvokeAsync(IContext ctx, IInput input)
+		public Task<object> InvokeAsync(IContext ctx, IInput input, IServiceProvider services)
 		{
 			return _function(ctx, input);
 		}
