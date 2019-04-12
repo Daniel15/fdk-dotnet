@@ -4,7 +4,7 @@ namespace FnProject.Examples.Basic
 {
 	public class HelloWorldFunction
 	{
-		public async Task<object> InvokeAsync(string input)
+		public async Task<string> InvokeAsync(string input)
 		{
 			if (string.IsNullOrWhiteSpace(input))
 			{

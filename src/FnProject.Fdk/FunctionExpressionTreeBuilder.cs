@@ -90,6 +90,16 @@ namespace FnProject.Fdk
 
 			var body = Expression.Call(instanceArg, method, callArgs);
 
+			// If method doesn't return Task<object> (eg. it returns Task<string>), explicitly cast result to object
+			// This is required because Task<T> isn't covariant :(
+			if (
+				method.ReturnType.BaseType == typeof(Task) && 
+				method.ReturnType.IsGenericType &&
+				method.ReturnType.GenericTypeArguments[0] != typeof(object))
+			{
+				body = CreateUpcastTaskCall(body, method.ReturnType.GenericTypeArguments[0]);
+			}
+
 			var lambda = Expression.Lambda<Func<T, IServiceProvider, Task<object>>>(
 				body,
 				"FunctionExpressionTreeInvoke",
@@ -133,6 +143,34 @@ namespace FnProject.Fdk
 		private static Expression CreateAsStringCall(Expression inputArg)
 		{
 			return Expression.Call(inputArg, typeof(IInput).GetMethod(nameof(IInput.AsString)));
+		}
+
+		/// <summary>
+		/// If method doesn't return Task{object} (eg. it returns Task{string}), explicitly cast
+		/// result to object. This is required because <see cref="Task{TResult}"/> isn't covariant :(
+		/// </summary>
+		/// <param name="task">Expression that returns a Task{TResult}</param>
+		/// <returns>Expression that returns a Task{object}</returns>
+		private static MethodCallExpression CreateUpcastTaskCall(
+			MethodCallExpression task,
+			Type taskType
+		)
+		{
+			var upcastMethod = typeof(FunctionExpressionTreeBuilder)
+				.GetMethod(nameof(UpcastTask))
+				.MakeGenericMethod(taskType);
+			return Expression.Call(null, upcastMethod, task);
+		}
+
+		/// <summary>
+		/// Cast Task{T} to Task{object}
+		/// </summary>
+		/// <typeparam name="T">Type of the task</typeparam>
+		/// <param name="task">The task to upcast</param>
+		/// <returns>Task with its result upcasted to <see cref="Object"/>.</returns>
+		public static Task<object> UpcastTask<T>(Task<T> task)
+		{
+			return task.ContinueWith(x => (object) x.Result);
 		}
 	}
 }
