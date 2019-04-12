@@ -36,7 +36,7 @@ namespace FnProject.Fdk
 		/// </remarks>
 		/// <typeparam name="T">Type of class containing the InvokeAsync method</typeparam>
 		/// <returns>Lambda function</returns>
-		public static Func<T, IContext, IInput, IServiceProvider, Task<object>> CreateLambda<T>()
+		public static Func<T, IServiceProvider, Task<object>> CreateLambda<T>()
 		{
 			var fnType = typeof(T);
 			var method = fnType.GetMethod(METHOD_NAME, BindingFlags.Instance | BindingFlags.Public);
@@ -47,33 +47,21 @@ namespace FnProject.Fdk
 
 			var instanceArg = Expression.Parameter(fnType, "instance");
 			var servicesArg = Expression.Parameter(typeof(IServiceProvider), "services");
-			var contextArg = Expression.Parameter(typeof(IContext), "ctx");
-			var inputArg = Expression.Parameter(typeof(IInput), "input");
 
 			var getServiceMethod = typeof(ServiceProviderServiceExtensions).GetMethod(
 				"GetRequiredService",
 				new[] { typeof(IServiceProvider), typeof(Type) }
 			);
 
+			var inputArg = CreateResolveServiceCall(servicesArg, typeof(IInput), getServiceMethod);
+
 			var callArgs = method.GetParameters().Select(param =>
 			{
 				var paramType = param.ParameterType;
 
-				// Standard params
 				if (paramType == typeof(IServiceProvider))
 				{
 					return servicesArg;
-				}
-
-				// TODO: These could just come from the DI container, rather than passing them explicitly...
-				if (paramType == typeof(IContext))
-				{
-					return contextArg;
-				}
-
-				if (paramType == typeof(IInput))
-				{
-					return inputArg;
 				}
 
 				// String => assume it's the raw input
@@ -102,12 +90,13 @@ namespace FnProject.Fdk
 
 			var body = Expression.Call(instanceArg, method, callArgs);
 
-			var lambda = Expression.Lambda<Func<T, IContext, IInput, IServiceProvider, Task<object>>>(
+			var lambda = Expression.Lambda<Func<T, IServiceProvider, Task<object>>>(
 				body,
-				instanceArg,
-				contextArg,
-				inputArg,
-				servicesArg
+				"FunctionExpressionTreeInvoke",
+				new [] {
+					instanceArg,
+					servicesArg
+				}
 			);
 			return lambda.Compile();
 		}
@@ -133,7 +122,7 @@ namespace FnProject.Fdk
 		/// <summary>
 		/// Creates a call to <see cref="IInput.AsJson"/>
 		/// </summary>
-		private static Expression CreateAsJsonCall(ParameterExpression inputArg, Type paramType)
+		private static Expression CreateAsJsonCall(Expression inputArg, Type paramType)
 		{
 			return Expression.Call(inputArg, nameof(IInput.AsJson), new[] {paramType});
 		}
@@ -141,7 +130,7 @@ namespace FnProject.Fdk
 		/// <summary>
 		/// Creates a call to <see cref="IInput.AsString"/>
 		/// </summary>
-		private static Expression CreateAsStringCall(ParameterExpression inputArg)
+		private static Expression CreateAsStringCall(Expression inputArg)
 		{
 			return Expression.Call(inputArg, typeof(IInput).GetMethod(nameof(IInput.AsString)));
 		}

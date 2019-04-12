@@ -18,12 +18,14 @@ namespace FnProject.Fdk.Tests
 		[Fact]
 		public async Task TestPassesInputAsString()
 		{
+			var services = new ServiceCollection()
+				.AddScoped(_ => Substitute.For<IContext>())
+				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput("Daniel"))
+				.BuildServiceProvider();
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithStringInput>();
 			var result = await function(
 				new FunctionWithStringInput(),
-				Substitute.For<IContext>(),
-				InputTestUtils.CreateTestInput("Daniel"),
-				new ServiceCollection().BuildServiceProvider()
+				services
 			);
 
 			Assert.Equal("Hello Daniel", result);
@@ -43,12 +45,14 @@ namespace FnProject.Fdk.Tests
 		[Fact]
 		public async Task TestPassesInputAsJson()
 		{
+			var services = new ServiceCollection()
+				.AddScoped(_ => Substitute.For<IContext>())
+				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput(@"{""Name"": ""Daniel""}"))
+				.BuildServiceProvider();
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithJsonInput>();
 			var result = await function(
 				new FunctionWithJsonInput(),
-				Substitute.For<IContext>(),
-				InputTestUtils.CreateTestInput(@"{""Name"": ""Daniel""}"),
-				new ServiceCollection().BuildServiceProvider()
+				services
 			);
 
 			Assert.Equal("Hello Daniel", result);
@@ -64,12 +68,14 @@ namespace FnProject.Fdk.Tests
 		[Fact]
 		public async Task TestPassesInputAsDynamicJson()
 		{
+			var services = new ServiceCollection()
+				.AddScoped(_ => Substitute.For<IContext>())
+				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput(@"{""Name"": ""Daniel""}"))
+				.BuildServiceProvider();
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithDynamicJsonInput>();
 			var result = await function(
 				new FunctionWithDynamicJsonInput(),
-				Substitute.For<IContext>(),
-				InputTestUtils.CreateTestInput(@"{""Name"": ""Daniel""}"),
-				new ServiceCollection().BuildServiceProvider()
+				services
 			);
 
 			Assert.Equal("Hello Daniel", result);
