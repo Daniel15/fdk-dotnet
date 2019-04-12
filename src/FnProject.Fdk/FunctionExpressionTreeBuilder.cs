@@ -13,7 +13,8 @@ namespace FnProject.Fdk
 	/// </summary>
 	public static class FunctionExpressionTreeBuilder
 	{
-		private const string METHOD_NAME = "InvokeAsync";
+		private const string ASYNC_METHOD_NAME = "InvokeAsync";
+		private const string SYNC_METHOD_NAME = "Invoke";
 		private const string INPUT_PARAM = "input";
 
 		/// <summary>
@@ -39,11 +40,12 @@ namespace FnProject.Fdk
 		public static Func<T, IServiceProvider, Task<object>> CreateLambda<T>()
 		{
 			var fnType = typeof(T);
-			var method = fnType.GetMethod(METHOD_NAME, BindingFlags.Instance | BindingFlags.Public);
-			if (method == null)
-			{
-				throw new InvalidFunctionException($"{fnType.Name} has no {METHOD_NAME} method");
-			}
+			var method =
+				fnType.GetMethod(ASYNC_METHOD_NAME, BindingFlags.Instance | BindingFlags.Public)
+				?? fnType.GetMethod(SYNC_METHOD_NAME, BindingFlags.Instance | BindingFlags.Public)
+				?? throw new InvalidFunctionException(
+					$"{fnType.Name} has no {ASYNC_METHOD_NAME} or {SYNC_METHOD_NAME} method."
+				);
 
 			var instanceArg = Expression.Parameter(fnType, "instance");
 			var servicesArg = Expression.Parameter(typeof(IServiceProvider), "services");
@@ -90,9 +92,14 @@ namespace FnProject.Fdk
 
 			var body = Expression.Call(instanceArg, method, callArgs);
 
+			// If it's not async, wrap it in Task.FromResult(...)
+			if (method.ReturnType.BaseType != typeof(Task))
+			{
+				body = CreateTaskFromResultCall(body);
+			}
 			// If method doesn't return Task<object> (eg. it returns Task<string>), explicitly cast result to object
 			// This is required because Task<T> isn't covariant :(
-			if (
+			else if (
 				method.ReturnType.BaseType == typeof(Task) && 
 				method.ReturnType.IsGenericType &&
 				method.ReturnType.GenericTypeArguments[0] != typeof(object))
@@ -171,6 +178,17 @@ namespace FnProject.Fdk
 		public static Task<object> UpcastTask<T>(Task<T> task)
 		{
 			return task.ContinueWith(x => (object) x.Result);
+		}
+
+		/// <summary>
+		/// Creates a <see cref="Task.FromResult{TResult}"/> call to wrap a result in a Task.
+		/// </summary>
+		private static MethodCallExpression CreateTaskFromResultCall(MethodCallExpression result)
+		{
+			var taskFromResultMethod = typeof(Task)
+				.GetMethod(nameof(Task.FromResult))
+				.MakeGenericMethod(typeof(object));
+			return Expression.Call(null, taskFromResultMethod, result);
 		}
 	}
 }

@@ -22,8 +22,6 @@ namespace FnProject.Fdk.Tests
 		{
 			var services = new ServiceCollection()
 				.AddTransient<IFoo, Foo>()
-				.AddScoped(_ => Substitute.For<IContext>())
-				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput(string.Empty))
 				.BuildServiceProvider();
 
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithServiceInInvoke>();
@@ -34,12 +32,12 @@ namespace FnProject.Fdk.Tests
 		}
 
 		[Fact]
-		public void TestThrowsIfNoInvokeAsyncMethod()
+		public void TestThrowsIfNoInvokeOrInvokeAsyncMethod()
 		{
 			var ex = Assert.Throws<InvalidFunctionException>(
 				() => FunctionExpressionTreeBuilder.CreateLambda<Foo>()
 			);
-			Assert.Equal("Foo has no InvokeAsync method", ex.Message);
+			Assert.Equal("Foo has no InvokeAsync or Invoke method.", ex.Message);
 		}
 
 		private interface IFoo { }

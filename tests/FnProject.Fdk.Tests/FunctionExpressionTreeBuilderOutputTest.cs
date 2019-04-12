@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
-using FnProject.Fdk.Tests.Utils;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Xunit;
 
 namespace FnProject.Fdk.Tests
@@ -24,6 +22,24 @@ namespace FnProject.Fdk.Tests
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionReturningTaskOfString>();
 			var result = await function(new FunctionReturningTaskOfString(), services);
 			Assert.Equal("Hello World!", result);
+		}
+
+		private class FunctionReturningString
+		{
+			public string Invoke()
+			{
+				return "Hello Non-Async World!";
+			}
+		}
+		[Fact]
+		public async Task TestCanReturnStringSync()
+		{
+			var services = new ServiceCollection()
+				.BuildServiceProvider();
+
+			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionReturningString>();
+			var result = await function(new FunctionReturningString(), services);
+			Assert.Equal("Hello Non-Async World!", result);
 		}
 	}
 }

@@ -19,7 +19,6 @@ namespace FnProject.Fdk.Tests
 		public async Task TestPassesInputAsString()
 		{
 			var services = new ServiceCollection()
-				.AddScoped(_ => Substitute.For<IContext>())
 				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput("Daniel"))
 				.BuildServiceProvider();
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithStringInput>();
@@ -46,7 +45,6 @@ namespace FnProject.Fdk.Tests
 		public async Task TestPassesInputAsJson()
 		{
 			var services = new ServiceCollection()
-				.AddScoped(_ => Substitute.For<IContext>())
 				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput(@"{""Name"": ""Daniel""}"))
 				.BuildServiceProvider();
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithJsonInput>();
@@ -69,7 +67,6 @@ namespace FnProject.Fdk.Tests
 		public async Task TestPassesInputAsDynamicJson()
 		{
 			var services = new ServiceCollection()
-				.AddScoped(_ => Substitute.For<IContext>())
 				.AddScoped<IInput>(_ => InputTestUtils.CreateTestInput(@"{""Name"": ""Daniel""}"))
 				.BuildServiceProvider();
 			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionWithDynamicJsonInput>();

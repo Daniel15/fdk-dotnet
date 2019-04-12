@@ -1,8 +1,10 @@
-﻿namespace FnProject.Examples.Basic
+﻿using System.Threading.Tasks;
+
+namespace FnProject.Examples.Basic
 {
-	public class HelloWorldFunction
+	public class HelloWorldAsyncFunction
 	{
-		public string Invoke(string input)
+		public async Task<string> InvokeAsync(string input)
 		{
 			if (string.IsNullOrWhiteSpace(input))
 			{
