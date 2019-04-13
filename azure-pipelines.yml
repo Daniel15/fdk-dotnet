@@ -1,0 +1,26 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  buildConfiguration: 'Release'
+  dotNetCoreVersion: '2.2.103'
+
+steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core SDK $(dotNetCoreVersion)'
+  inputs:
+    version: $(dotNetCoreVersion)
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet test --configuration $(buildConfiguration)
+  displayName: 'dotnet test'
+
+- script: 'dotnet pack src/FnProject.Fdk/FnProject.Fdk.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) --version-suffix=dev-$(Build.BuildNumber)'
+  displayName: 'dotnet pack'
+
+- task: PublishBuildArtifacts@1
