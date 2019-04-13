@@ -22,17 +22,24 @@ steps:
     version: $(dotNetCoreVersion)
 
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build'
 
-- script: dotnet test --configuration $(buildConfiguration) --no-build --collect "Code Coverage" --logger trx
-  displayName: 'dotnet test'
-
-- task: PublishTestResults@2
+- task: DotNetCoreCLI@2
+  displayName: 'Test'
   inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: tests/**/*.trx
+    command: test
+    projects: 'tests/**/*.csproj'
+    arguments: '--configuration $(BuildConfiguration) --no-build --collect "Code Coverage"'
+
+#- script: dotnet test --configuration $(buildConfiguration) --no-build --collect "Code Coverage" --logger trx
+#  displayName: 'dotnet test'
+
+#- task: PublishTestResults@2
+#  inputs:
+#    testResultsFormat: 'VSTest'
+#    testResultsFiles: tests/**/*.trx
 
 - script: 'dotnet pack src/FnProject.Fdk/FnProject.Fdk.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) --version-suffix=dev-$(Build.BuildNumber)'
-  displayName: 'dotnet pack'
+  displayName: 'Package'
 
 - task: PublishBuildArtifacts@1
