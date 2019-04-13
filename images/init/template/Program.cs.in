@@ -1,21 +1,23 @@
+using System.Threading;
+using System.Threading.Tasks;
 using FnProject.Fdk;
-using System;
 
 namespace {FUNCTION_NAME}
 {
-	class Program
+	public class Function
 	{
-		static void Main(string[] args)
+		public Task<string> InvokeAsync(string input, CancellationToken timedOut)
 		{
-			FdkHandler.Handle((ctx, input) =>
+			if (string.IsNullOrWhiteSpace(input))
 			{
-				var inputStr = input.AsString();
-				if (string.IsNullOrWhiteSpace(inputStr))
-				{
-					inputStr = "world";
-				}
-				return "Hello " + inputStr;
-			});
+				input = "world";
+			}
+			return Task.FromResult("Hello " + input);
+		}
+
+		public static void Main()
+		{
+			FdkHandler.Handle<Function>();
 		}
 	}
 }

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Daniel Lo Nigro</Authors>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <Company>Daniel Lo Nigro</Company>
     <Description>.NET Core implementation of Fn FDK (Function Development Kit)</Description>
     <PackageIconUrl>https://d.ls/images/fn-logo-square.png</PackageIconUrl>

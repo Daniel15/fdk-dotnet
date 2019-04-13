@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FnProject.Fdk" Version="0.1.0" />
+    <PackageReference Include="FnProject.Fdk" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
