@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using FnProject.Fdk.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,6 +65,13 @@ namespace FnProject.Fdk
 				if (paramType == typeof(IServiceProvider))
 				{
 					return servicesArg;
+				}
+
+				// CancellationToken
+				// --> Get it from the context
+				if (paramType == typeof(CancellationToken))
+				{
+					return CreateCancellationTokenCall(servicesArg, getServiceMethod);
 				}
 
 				// String => assume it's the raw input
@@ -189,6 +197,15 @@ namespace FnProject.Fdk
 				.GetMethod(nameof(Task.FromResult))
 				.MakeGenericMethod(typeof(object));
 			return Expression.Call(null, taskFromResultMethod, result);
+		}
+
+		/// <summary>
+		/// Creates a call to get the CancellationToken for the request
+		/// </summary>
+		private static Expression CreateCancellationTokenCall(ParameterExpression servicesArg, MethodInfo getServiceMethod)
+		{
+			var contextArg = CreateResolveServiceCall(servicesArg, typeof(IContext), getServiceMethod);
+			return Expression.Property(contextArg, nameof(IContext.TimedOut));
 		}
 	}
 }
