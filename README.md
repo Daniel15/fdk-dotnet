@@ -1,6 +1,6 @@
 # Fn Function Developer Kit for C\#
 
-![Build Status](https://img.shields.io/azure-devops/build/daniel15/7376b016-834c-4510-99ae-6eca393d03d2/5.svg)&nbsp;
+[![Build Status](https://dev.azure.com/daniel15/fdk-dotnet/_apis/build/status/Daniel15.fdk-dotnet?branchName=master)](https://dev.azure.com/daniel15/fdk-dotnet/_build/latest?definitionId=5&branchName=master)&nbsp;
 [![NuGet version](http://img.shields.io/nuget/v/FnProject.Fdk.svg)](https://www.nuget.org/packages/React.Core/)
 
 This Function Developer Kit makes it easy to deploy .NET Core functions to Fn.
