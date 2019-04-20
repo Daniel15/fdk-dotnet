@@ -1,7 +1,10 @@
 ﻿using System.IO;
 
-namespace FnProject.Fdk
+namespace FaasUtils
 {
+	/// <summary>
+	/// Represents the input to a function
+	/// </summary>
 	public interface IInput
 	{
 		/// <summary>

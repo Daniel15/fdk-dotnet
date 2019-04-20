@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+using FaasUtils.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace FnProject.Fdk.Tests
+namespace FaasUtils.Tests
 {
 	public class FunctionExpressionTreeBuilderOutputTest
 	{
@@ -17,9 +18,11 @@ namespace FnProject.Fdk.Tests
 		public async Task TestCanReturnTaskOfString()
 		{
 			var services = new ServiceCollection()
+				.AddFaasUtils()
 				.BuildServiceProvider();
 
-			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionReturningTaskOfString>();
+			var function = services.GetRequiredService<IFunctionExpressionTreeBuilder>()
+				.CreateLambda<FunctionReturningTaskOfString>();
 			var result = await function(new FunctionReturningTaskOfString(), services);
 			Assert.Equal("Hello World!", result);
 		}
@@ -35,9 +38,11 @@ namespace FnProject.Fdk.Tests
 		public async Task TestCanReturnStringSync()
 		{
 			var services = new ServiceCollection()
+				.AddFaasUtils()
 				.BuildServiceProvider();
 
-			var function = FunctionExpressionTreeBuilder.CreateLambda<FunctionReturningString>();
+			var function = services.GetRequiredService<IFunctionExpressionTreeBuilder>()
+				.CreateLambda<FunctionReturningString>();
 			var result = await function(new FunctionReturningString(), services);
 			Assert.Equal("Hello Non-Async World!", result);
 		}

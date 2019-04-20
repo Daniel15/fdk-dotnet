@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using FnProject.Fdk.Tests.Utils;
+using FaasUtils.Tests.Utils;
 using Xunit;
 
-namespace FnProject.Fdk.Tests
+namespace FaasUtils.Tests
 {
 	public class InputTest
 	{

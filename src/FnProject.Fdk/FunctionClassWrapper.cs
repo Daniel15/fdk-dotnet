@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FaasUtils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FnProject.Fdk
@@ -14,10 +15,10 @@ namespace FnProject.Fdk
 		private readonly Func<T, IServiceProvider, Task<object>> _function;
 		private readonly T _instance;
 
-		public FunctionClassWrapper(IServiceProvider services)
+		public FunctionClassWrapper(IServiceProvider services, IFunctionExpressionTreeBuilder funcBuilder)
 		{
 			_instance = ActivatorUtilities.CreateInstance<T>(services);
-			_function = FunctionExpressionTreeBuilder.CreateLambda<T>();
+			_function = funcBuilder.CreateLambda<T>();
 		}
 
 		/// <summary>

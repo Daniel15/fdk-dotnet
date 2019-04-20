@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FnProject.Fdk.Exceptions
+namespace FaasUtils.Exceptions
 {
 	public class InvalidFunctionException : Exception
 	{

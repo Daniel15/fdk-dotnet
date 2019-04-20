@@ -2,35 +2,39 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using FnProject.Fdk.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
+using FaasUtils.Exceptions;
 
-namespace FnProject.Fdk
+namespace FaasUtils
 {
 	/// <summary>
 	/// Handles building expression trees for functions.
 	/// </summary>
-	public static class FunctionExpressionTreeBuilder
+	public class FunctionExpressionTreeBuilder : IFunctionExpressionTreeBuilder
 	{
 		private const string ASYNC_METHOD_NAME = "InvokeAsync";
 		private const string SYNC_METHOD_NAME = "Invoke";
-		private const string INPUT_PARAM = "input";
+
+		private readonly IArgumentResolver _argResolver;
+
+		public FunctionExpressionTreeBuilder(IArgumentResolver argResolver)
+		{
+			_argResolver = argResolver;
+		}
 
 		/// <summary>
 		/// Creates a delegate to call the specified function class.
 		/// </summary>
 		/// <remarks>
 		/// Given this class:
-		///
+		/// 
 		///   class MyFunction
 		///   {
 		///       public Task InvokeAsync(IFoo, string input) { ... }
 		///   }
-		///
+		/// 
 		/// Returns a delegate like:
-		///
+		/// 
 		///   Task Invoke(MyFunction instance, IContext ctx, IInput input, IServiceProvider services)
 		///   {
 		///       return instance.InvokeAsync(provider.GetRequiredService(typeof(IFoo)), input.AsString());
@@ -38,7 +42,7 @@ namespace FnProject.Fdk
 		/// </remarks>
 		/// <typeparam name="T">Type of class containing the InvokeAsync method</typeparam>
 		/// <returns>Lambda function</returns>
-		public static Func<T, IServiceProvider, Task<object>> CreateLambda<T>()
+		public Func<T, IServiceProvider, Task<object>> CreateLambda<T>()
 		{
 			var fnType = typeof(T);
 			var method =
@@ -51,52 +55,13 @@ namespace FnProject.Fdk
 			var instanceArg = Expression.Parameter(fnType, "instance");
 			var servicesArg = Expression.Parameter(typeof(IServiceProvider), "services");
 
-			var getServiceMethod = typeof(ServiceProviderServiceExtensions).GetMethod(
-				"GetRequiredService",
-				new[] { typeof(IServiceProvider), typeof(Type) }
+			var callArgs = method.GetParameters().Select(
+				param => 
+					_argResolver.Resolve(param, servicesArg) ??
+					throw new InvalidOperationException(
+						"Unrecognized parameter type {param.ParameterType} for {param.Name}"
+					)
 			);
-
-			var inputArg = CreateResolveServiceCall(servicesArg, typeof(IInput), getServiceMethod);
-
-			var callArgs = method.GetParameters().Select(param =>
-			{
-				var paramType = param.ParameterType;
-
-				if (paramType == typeof(IServiceProvider))
-				{
-					return servicesArg;
-				}
-
-				// CancellationToken
-				// --> Get it from the context
-				if (paramType == typeof(CancellationToken))
-				{
-					return CreateCancellationTokenCall(servicesArg, getServiceMethod);
-				}
-
-				// String => assume it's the raw input
-				// --> input.AsString()
-				if (paramType == typeof(string))
-				{
-					return CreateAsStringCall(inputArg);
-				}
-
-				// Interface => Assume it needs to be resolved through the DI container
-				// --> (IFoo)ServiceProviderServiceExtensions.GetRequiredService(services, typeof(IFoo))
-				if (paramType.IsInterface)
-				{
-					return CreateResolveServiceCall(servicesArg, paramType, getServiceMethod);
-				}
-
-				// Class with name of "input" => Assume it's coming from JSON
-				if (paramType.IsClass && param.Name == INPUT_PARAM)
-				{
-					return CreateAsJsonCall(inputArg, paramType);
-				}
-
-				// Unrecognised - Bail out
-				throw new InvalidOperationException($"Unrecognized parameter type {paramType} for {param.Name}");
-			});
 
 			var body = Expression.Call(instanceArg, method, callArgs);
 
@@ -124,40 +89,6 @@ namespace FnProject.Fdk
 				}
 			);
 			return lambda.Compile();
-		}
-
-		/// <summary>
-		/// Creates a call to <see cref="ServiceProviderServiceExtensions.GetRequiredService"/>
-		/// </summary>
-		private static Expression CreateResolveServiceCall(
-			ParameterExpression servicesArg, 
-			Type paramType,
-			MethodInfo getServiceMethod
-		)
-		{
-			var getServiceArgs = new Expression[]
-			{
-				servicesArg,
-				Expression.Constant(paramType, typeof(Type))
-			};
-			var getServiceCall = Expression.Call(null, getServiceMethod, getServiceArgs);
-			return Expression.Convert(getServiceCall, paramType);
-		}
-
-		/// <summary>
-		/// Creates a call to <see cref="IInput.AsJson"/>
-		/// </summary>
-		private static Expression CreateAsJsonCall(Expression inputArg, Type paramType)
-		{
-			return Expression.Call(inputArg, nameof(IInput.AsJson), new[] {paramType});
-		}
-
-		/// <summary>
-		/// Creates a call to <see cref="IInput.AsString"/>
-		/// </summary>
-		private static Expression CreateAsStringCall(Expression inputArg)
-		{
-			return Expression.Call(inputArg, typeof(IInput).GetMethod(nameof(IInput.AsString)));
 		}
 
 		/// <summary>
@@ -197,15 +128,6 @@ namespace FnProject.Fdk
 				.GetMethod(nameof(Task.FromResult))
 				.MakeGenericMethod(typeof(object));
 			return Expression.Call(null, taskFromResultMethod, result);
-		}
-
-		/// <summary>
-		/// Creates a call to get the CancellationToken for the request
-		/// </summary>
-		private static Expression CreateCancellationTokenCall(ParameterExpression servicesArg, MethodInfo getServiceMethod)
-		{
-			var contextArg = CreateResolveServiceCall(servicesArg, typeof(IContext), getServiceMethod);
-			return Expression.Property(contextArg, nameof(IContext.TimedOut));
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 
-namespace FnProject.Fdk.Tests.Utils
+namespace FaasUtils.Tests.Utils
 {
 	/// <summary>
 	/// Utilities for <see cref="Input"/>s in unit tests.

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using FaasUtils;
+using FaasUtils.Extensions;
 using FnProject.Fdk.Middleware;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Mono.Unix.Native;
 
 namespace FnProject.Fdk
@@ -21,10 +24,12 @@ namespace FnProject.Fdk
 		/// </summary>
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddFaasUtils();
+			services.Replace(ServiceDescriptor.Transient<IArgumentResolver, FnArgumentResolver>());
+
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			services.AddScoped<IContext, Context>();
-			services.AddScoped<IInput, Input>();
 		}
 
 		/// <summary>

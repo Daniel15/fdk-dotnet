@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FaasUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 

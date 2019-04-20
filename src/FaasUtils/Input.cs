@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FnProject.Fdk
+namespace FaasUtils
 {
 	/// <summary>
 	/// Represents the input to a function
