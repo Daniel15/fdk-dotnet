@@ -1,7 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Authors>Daniel Lo Nigro</Authors>
+    <Description>FaasUtils is a collection of utilities that could be useful for various FaaS systems/providers (FnProject, OpenFaaS, etc). It is designed to be used as a dependency for FaaS SDKs</Description>
+    <PackageLicenseUrl>https://github.com/Daniel15/fdk-dotnet/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://d.sb/faasutils</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Daniel15/fdk-dotnet/</RepositoryUrl>
+    <PackageTags>serverless faas</PackageTags>
+    <PackageReleaseNotes>See README at https://d.sb/faasutils</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
