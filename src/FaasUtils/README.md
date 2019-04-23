@@ -1,6 +1,7 @@
 ﻿# FaasUtils
 
 [![Build Status](https://dev.azure.com/daniel15/fdk-dotnet/_apis/build/status/Daniel15.fdk-dotnet?branchName=master)](https://dev.azure.com/daniel15/fdk-dotnet/_build/latest?definitionId=5&branchName=master)&nbsp;
+[![NuGet version](http://img.shields.io/nuget/v/FaasUtils.svg)](https://www.nuget.org/packages/FaasUtils/)
 
 `FaasUtils` is a collection of utilities that could be useful for various FaaS systems/providers (FnProject, OpenFaaS, etc). It is designed to be used as a dependency for FaaS SDKs, rather than directly by functions themselves.
 
