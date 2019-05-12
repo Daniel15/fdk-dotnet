@@ -50,15 +50,18 @@ namespace FaasUtils.Tests
 		}
 
 		[Fact]
-		public void TestReturnsVoidForRandomClass()
+		public void TestResolvesClass()
 		{
 			var param = Substitute.For<ParameterInfo>();
 			// Class param NOT called "input"
-			param.ParameterType.Returns(typeof(FooInput));
+			param.ParameterType.Returns(typeof(Foo));
 			param.Name.Returns("SomeRandomThing");
 			var result = Resolve(param);
 
-			Assert.Null(result);
+			Assert.Equal(
+				"Convert(services.GetRequiredService(FaasUtils.Tests.ArgumentResolverTest+Foo), Foo)",
+				result.ToString()
+			);
 		}
 
 		private Expression Resolve(Type type)
@@ -76,6 +79,7 @@ namespace FaasUtils.Tests
 		}
 
 		private interface IFoo { }
+		private class Foo { }
 		private class FooInput { }
 	}
 }

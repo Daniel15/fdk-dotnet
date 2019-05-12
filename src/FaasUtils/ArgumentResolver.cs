@@ -46,17 +46,17 @@ namespace FaasUtils
 				return CreateAsStringCall(inputArg);
 			}
 
-			// Interface => Assume it needs to be resolved through the DI container
-			// --> (IFoo)ServiceProviderServiceExtensions.GetRequiredService(services, typeof(IFoo))
-			if (paramType.IsInterface)
-			{
-				return CreateResolveServiceCall(servicesArg, paramType);
-			}
-
 			// Class with name of "input" => Assume it's coming from JSON
 			if (paramType.IsClass && param.Name == INPUT_PARAM)
 			{
 				return CreateAsJsonCall(inputArg, paramType);
+			}
+
+			// Interface or class => Assume it needs to be resolved through the DI container
+			// --> (IFoo)ServiceProviderServiceExtensions.GetRequiredService(services, typeof(IFoo))
+			if (paramType.IsInterface || paramType.IsClass)
+			{
+				return CreateResolveServiceCall(servicesArg, paramType);
 			}
 
 			return null;
