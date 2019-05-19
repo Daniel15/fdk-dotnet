@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 
@@ -9,12 +10,18 @@ namespace FnProject.Fdk
 	/// </summary>
 	public class Context : IContext
 	{
+		/// <summary>
+		/// Prefix used before HTTP headers that are passed to the function
+		/// </summary>
+		private const string HEADER_PREFIX = "Fn-Http-H-";
+
 		private readonly HttpRequest _request;
 
 		public Context(IConfig config, IHttpContextAccessor httpContextAccessor)
 		{
 			_request = httpContextAccessor.HttpContext.Request;
 			Config = config;
+			Headers = GetFnHeaders(_request.Headers);
 		}
 
 		/// <summary>
@@ -46,7 +53,7 @@ namespace FnProject.Fdk
 		/// <summary>
 		/// Get all HTTP headers for the request
 		/// </summary>
-		public IHeaderDictionary Headers => _request.Headers;
+		public IHeaderDictionary Headers { get; }
 
 		/// <summary>
 		/// Gets the method for this event
@@ -62,5 +69,19 @@ namespace FnProject.Fdk
 		/// Gets the cancellation token to handle aborting the request if it takes too long.
 		/// </summary>
 		public CancellationToken TimedOut { get; set; }
+
+		/// <summary>
+		/// Gets the headers that should be passed to the function.
+		/// </summary>
+		/// <param name="allHeaders">All headers passed to the request</param>
+		/// <returns>Headers to pass to the function</returns>
+		private static IHeaderDictionary GetFnHeaders(IHeaderDictionary allHeaders)
+		{
+			return new HeaderDictionary(
+				allHeaders
+					.Where(pair => pair.Key.StartsWith(HEADER_PREFIX))
+					.ToDictionary(pair => pair.Key.Substring(HEADER_PREFIX.Length), pair => pair.Value)
+			);
+		}
 	}
 }
