@@ -15,18 +15,15 @@ namespace FnProject.Fdk.Middleware
 	{
 		private readonly IFunction _function;
 		private readonly ILogger<FdkMiddleware> _logger;
-		private readonly IServiceProvider _services;
 
 		public FdkMiddleware(
 			RequestDelegate next, 
 			IFunction function, 
-			ILogger<FdkMiddleware> logger, 
-			IServiceProvider services
+			ILogger<FdkMiddleware> logger
 		)
 		{
 			_function = function;
 			_logger = logger;
-			_services = services;
 		}
 
 		/// <summary>
@@ -34,7 +31,7 @@ namespace FnProject.Fdk.Middleware
 		/// </summary>
 		public async Task InvokeAsync(HttpContext httpContext, IContext fnContext, IInput input)
 		{
-			var rawResult = await RunFunctionAsync(fnContext, input);
+			var rawResult = await RunFunctionAsync(httpContext.RequestServices, fnContext, input);
 			var result = ResultFactory.Create(rawResult);
 			await result.WriteResult(httpContext.Response);
 		}
@@ -43,7 +40,7 @@ namespace FnProject.Fdk.Middleware
 		/// Executes the function. If it does not complete within the specified time frame,
 		/// returns a timeout error.
 		/// </summary>
-		private async Task<object> RunFunctionAsync(IContext fnContext, IInput input)
+		private async Task<object> RunFunctionAsync(IServiceProvider services, IContext fnContext, IInput input)
 		{
 			var tokenSource = new CancellationTokenSource();
 			fnContext.TimedOut = tokenSource.Token;
@@ -52,10 +49,10 @@ namespace FnProject.Fdk.Middleware
 			if (timeUntilTimeout == null)
 			{
 				// No timeout, just run the function directly
-				return await _function.InvokeAsync(fnContext, input, _services);
+				return await _function.InvokeAsync(fnContext, input, services);
 			}
 			
-			var functionTask = _function.InvokeAsync(fnContext, input, _services);
+			var functionTask = _function.InvokeAsync(fnContext, input, services);
 			var resultOrCancellation = await Task.WhenAny(
 				functionTask,
 				Task.Delay(timeUntilTimeout.Value, tokenSource.Token)
